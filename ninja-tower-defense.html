@@ -175,10 +175,6 @@
                 font-size: 12px !important;
             }
             
-            .cell {
-                width: 60px !important;
-                height: 45px !important;
-            }
             
             .ninja {
                 width: 45px !important;
@@ -563,17 +559,32 @@
             }
 
             handleCellClick(row, col) {
-                if (!this.selectedNinja) return;
+                console.log('Cell clicked:', row, col, 'Selected ninja:', this.selectedNinja);
+                
+                if (!this.selectedNinja) {
+                    console.log('No ninja selected');
+                    return;
+                }
                 
                 const isPath = this.path.some(p => p.row === row && p.col === col);
-                if (isPath) return;
+                if (isPath) {
+                    console.log('Cannot place on path');
+                    return;
+                }
                 
                 const isOccupied = this.ninjas.some(n => n.row === row && n.col === col);
-                if (isOccupied) return;
+                if (isOccupied) {
+                    console.log('Cell occupied');
+                    return;
+                }
                 
                 const ninjaType = ninjaTypes[this.selectedNinja];
-                if (this.coins < ninjaType.cost) return;
+                if (this.coins < ninjaType.cost) {
+                    console.log('Not enough coins');
+                    return;
+                }
                 
+                console.log('Placing ninja at:', row, col);
                 this.placeNinja(row, col, this.selectedNinja);
             }
 
@@ -593,8 +604,6 @@
                 
                 const ninjaEl = document.createElement('div');
                 ninjaEl.className = 'ninja';
-                ninjaEl.style.left = (ninja.x - 30) + 'px';
-                ninjaEl.style.top = (ninja.y - 30) + 'px';
                 
                 const colors = {
                     basic: '#4B7688',
@@ -612,6 +621,11 @@
                 
                 const ninjaSize = isMobile ? 45 : 60;
                 const fontSize = isMobile ? 16 : 20;
+                const offset = isMobile ? 22.5 : 30;
+                
+                ninjaEl.style.left = (ninja.x - offset) + 'px';
+                ninjaEl.style.top = (ninja.y - offset) + 'px';
+                
                 ninjaEl.innerHTML = `<div style="width: ${ninjaSize}px; height: ${ninjaSize}px; background: ${colors[type]}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: ${fontSize}px; border: 2px solid #fff;">${symbols[type]}</div>`;
                 
                 this.board.appendChild(ninjaEl);
