@@ -163,10 +163,9 @@
                 font-size: 12px;
             }
             
-            .ninjaCard > div:first-child {
+            .ninjaCard img {
                 width: 40px !important;
                 height: 40px !important;
-                font-size: 16px !important;
             }
             
             .guide-content {
@@ -332,22 +331,22 @@
         
         <div id="ninjaSelection">
             <div class="ninjaCard" data-type="basic">
-                <div style="width: 50px; height: 50px; background: #4B7688; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">基</div>
+                <img src="./images/CryptoNinja-date/001.png" alt="基本忍者" style="width: 50px; height: 50px; object-fit: contain;">
                 <div>基本忍者</div>
                 <div class="cost">50コイン</div>
             </div>
             <div class="ninjaCard" data-type="speed">
-                <div style="width: 50px; height: 50px; background: #FFBF00; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">速</div>
+                <img src="./images/CryptoNinja-date/005.png" alt="速射忍者" style="width: 50px; height: 50px; object-fit: contain;">
                 <div>速射忍者</div>
                 <div class="cost">80コイン</div>
             </div>
             <div class="ninjaCard" data-type="power">
-                <div style="width: 50px; height: 50px; background: #FF4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">強</div>
+                <img src="./images/CryptoNinja-date/010.png" alt="強撃忍者" style="width: 50px; height: 50px; object-fit: contain;">
                 <div>強撃忍者</div>
                 <div class="cost">120コイン</div>
             </div>
             <div class="ninjaCard" data-type="range">
-                <div style="width: 50px; height: 50px; background: #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">遠</div>
+                <img src="./images/CryptoNinja-date/015.png" alt="遠距離忍者" style="width: 50px; height: 50px; object-fit: contain;">
                 <div>遠距離忍者</div>
                 <div class="cost">100コイン</div>
             </div>
@@ -366,10 +365,10 @@
                     
                     <h4 style="color: #fff; margin: 15px 0 10px;">忍者の種類</h4>
                     <ul style="margin-left: 20px;">
-                        <li><span style="color: #4B7688;">基本忍者</span>: バランス型 (50コイン)</li>
-                        <li><span style="color: #FFBF00;">速射忍者</span>: 攻撃速度重視 (80コイン)</li>
-                        <li><span style="color: #FF4444;">強撃忍者</span>: 攻撃力重視 (120コイン)</li>
-                        <li><span style="color: #4CAF50;">遠距離忍者</span>: 射程重視 (100コイン)</li>
+                        <li><strong>基本忍者</strong>: バランス型 (50コイン)</li>
+                        <li><strong>速射忍者</strong>: 攻撃速度重視 (80コイン)</li>
+                        <li><strong>強撃忍者</strong>: 攻撃力重視 (120コイン)</li>
+                        <li><strong>遠距離忍者</strong>: 射程重視 (100コイン)</li>
                     </ul>
                 </div>
                 
@@ -420,25 +419,29 @@
                 cost: 50,
                 damage: 10,
                 range: 150,
-                fireRate: 1000
+                fireRate: 1000,
+                image: './images/CryptoNinja-date/001.png'
             },
             speed: {
                 cost: 80,
                 damage: 5,
                 range: 120,
-                fireRate: 400
+                fireRate: 400,
+                image: './images/CryptoNinja-date/005.png'
             },
             power: {
                 cost: 120,
                 damage: 30,
                 range: 100,
-                fireRate: 2000
+                fireRate: 2000,
+                image: './images/CryptoNinja-date/010.png'
             },
             range: {
                 cost: 100,
                 damage: 15,
                 range: 200,
-                fireRate: 1200
+                fireRate: 1200,
+                image: './images/CryptoNinja-date/015.png'
             }
         };
 
@@ -622,7 +625,16 @@
                 ninjaEl.style.left = (ninja.x - offset) + 'px';
                 ninjaEl.style.top = (ninja.y - offset) + 'px';
                 
-                ninjaEl.innerHTML = `<div style="width: ${ninjaSize}px; height: ${ninjaSize}px; background: ${colors[type]}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: ${fontSize}px; border: 2px solid #fff;">${symbols[type]}</div>`;
+                const ninjaImg = document.createElement('img');
+                ninjaImg.src = ninjaType.image;
+                ninjaImg.style.width = ninjaSize + 'px';
+                ninjaImg.style.height = ninjaSize + 'px';
+                ninjaImg.style.objectFit = 'contain';
+                ninjaImg.style.borderRadius = '50%';
+                ninjaImg.style.border = '2px solid #fff';
+                ninjaImg.alt = type + ' ninja';
+                
+                ninjaEl.appendChild(ninjaImg);
                 
                 this.board.appendChild(ninjaEl);
                 ninja.element = ninjaEl;
