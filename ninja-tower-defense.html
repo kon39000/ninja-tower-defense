@@ -15,11 +15,10 @@
             font-family: 'Arial', sans-serif;
             background: #1a1a1a;
             color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 20px;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: auto;
         }
 
         #gameContainer {
@@ -27,8 +26,9 @@
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             padding: 20px;
-            max-width: 900px;
+            max-width: 100%;
             width: 100%;
+            margin: 0 auto;
         }
 
         #gameHeader {
@@ -43,13 +43,42 @@
 
         #gameBoard {
             position: relative;
-            width: 800px;
+            width: 100%;
+            max-width: 800px;
             height: 600px;
             background: #444;
             border: 2px solid #666;
             border-radius: 5px;
             margin: 0 auto;
             overflow: hidden;
+        }
+        
+        @media (max-width: 768px) {
+            #gameBoard {
+                height: 400px;
+                overflow: auto;
+            }
+            
+            #gameContainer {
+                padding: 10px;
+            }
+            
+            #gameHeader {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+            
+            #gameInfo {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+                font-size: 14px;
+            }
+            
+            .info-item {
+                padding: 3px 10px;
+            }
         }
 
         .cell {
@@ -119,6 +148,48 @@
             padding: 15px;
             background: #333;
             border-radius: 5px;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            #ninjaSelection {
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .ninjaCard {
+                min-width: 80px;
+                padding: 8px;
+                font-size: 12px;
+            }
+            
+            .ninjaCard > div:first-child {
+                width: 40px !important;
+                height: 40px !important;
+                font-size: 16px !important;
+            }
+            
+            .guide-content {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+                font-size: 12px !important;
+            }
+            
+            .cell {
+                width: 60px !important;
+                height: 45px !important;
+            }
+            
+            .ninja {
+                width: 45px !important;
+                height: 45px !important;
+            }
+            
+            .ninja > div {
+                width: 45px !important;
+                height: 45px !important;
+                font-size: 16px !important;
+            }
         }
 
         .ninjaCard {
@@ -288,7 +359,7 @@
         
         <div id="guideSection" style="margin-top: 20px; padding: 20px; background: #333; border-radius: 5px;">
             <h3 style="color: #ffdd00; margin-bottom: 15px;">🎮 遊び方ガイド</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 14px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 14px;" class="guide-content">
                 <div>
                     <h4 style="color: #fff; margin-bottom: 10px;">基本操作</h4>
                     <ul style="margin-left: 20px;">
@@ -336,10 +407,17 @@
     </div>
 
     <script>
-        const GRID_COLS = 10;
-        const GRID_ROWS = 10;
-        const CELL_WIDTH = 80;
-        const CELL_HEIGHT = 60;
+        let GRID_COLS = 10;
+        let GRID_ROWS = 10;
+        let CELL_WIDTH = 80;
+        let CELL_HEIGHT = 60;
+        
+        // モバイルデバイスの検出とサイズ調整
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            CELL_WIDTH = 60;
+            CELL_HEIGHT = 45;
+        }
 
         const ninjaTypes = {
             basic: {
@@ -410,6 +488,11 @@
                         cell.dataset.col = col;
                         
                         cell.addEventListener('click', () => this.handleCellClick(row, col));
+                        // タッチデバイス対応
+                        cell.addEventListener('touchend', (e) => {
+                            e.preventDefault();
+                            this.handleCellClick(row, col);
+                        });
                         
                         this.board.appendChild(cell);
                     }
@@ -453,10 +536,30 @@
                         card.classList.add('selected');
                         this.selectedNinja = card.dataset.type;
                     });
+                    
+                    // タッチデバイス対応
+                    card.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        document.querySelectorAll('.ninjaCard').forEach(c => c.classList.remove('selected'));
+                        card.classList.add('selected');
+                        this.selectedNinja = card.dataset.type;
+                    });
                 });
 
-                document.getElementById('startWaveBtn').addEventListener('click', () => this.startWave());
-                document.getElementById('restartBtn').addEventListener('click', () => this.restart());
+                const startBtn = document.getElementById('startWaveBtn');
+                const restartBtn = document.getElementById('restartBtn');
+                
+                startBtn.addEventListener('click', () => this.startWave());
+                startBtn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.startWave();
+                });
+                
+                restartBtn.addEventListener('click', () => this.restart());
+                restartBtn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.restart();
+                });
             }
 
             handleCellClick(row, col) {
@@ -507,7 +610,9 @@
                     range: '遠'
                 };
                 
-                ninjaEl.innerHTML = `<div style="width: 60px; height: 60px; background: ${colors[type]}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; border: 2px solid #fff;">${symbols[type]}</div>`;
+                const ninjaSize = isMobile ? 45 : 60;
+                const fontSize = isMobile ? 16 : 20;
+                ninjaEl.innerHTML = `<div style="width: ${ninjaSize}px; height: ${ninjaSize}px; background: ${colors[type]}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: ${fontSize}px; border: 2px solid #fff;">${symbols[type]}</div>`;
                 
                 this.board.appendChild(ninjaEl);
                 ninja.element = ninjaEl;
