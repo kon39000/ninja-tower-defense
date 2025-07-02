@@ -265,24 +265,63 @@
         
         <div id="ninjaSelection">
             <div class="ninjaCard" data-type="basic">
-                <img src="/CryptoNinja-date/001.png" alt="基本忍者">
+                <div style="width: 50px; height: 50px; background: #4B7688; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">基</div>
                 <div>基本忍者</div>
                 <div class="cost">50コイン</div>
             </div>
             <div class="ninjaCard" data-type="speed">
-                <img src="/CryptoNinja-date/005.png" alt="速射忍者">
+                <div style="width: 50px; height: 50px; background: #FFBF00; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">速</div>
                 <div>速射忍者</div>
                 <div class="cost">80コイン</div>
             </div>
             <div class="ninjaCard" data-type="power">
-                <img src="/CryptoNinja-date/010.png" alt="強撃忍者">
+                <div style="width: 50px; height: 50px; background: #FF4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">強</div>
                 <div>強撃忍者</div>
                 <div class="cost">120コイン</div>
             </div>
             <div class="ninjaCard" data-type="range">
-                <img src="/CryptoNinja-date/015.png" alt="遠距離忍者">
+                <div style="width: 50px; height: 50px; background: #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">遠</div>
                 <div>遠距離忍者</div>
                 <div class="cost">100コイン</div>
+            </div>
+        </div>
+        
+        <div id="guideSection" style="margin-top: 20px; padding: 20px; background: #333; border-radius: 5px;">
+            <h3 style="color: #ffdd00; margin-bottom: 15px;">🎮 遊び方ガイド</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 14px;">
+                <div>
+                    <h4 style="color: #fff; margin-bottom: 10px;">基本操作</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>忍者カードを選択</li>
+                        <li>グリッド上の空いている場所をクリック</li>
+                        <li>「ウェーブ開始」で敵の攻撃開始</li>
+                    </ul>
+                    
+                    <h4 style="color: #fff; margin: 15px 0 10px;">忍者の種類</h4>
+                    <ul style="margin-left: 20px;">
+                        <li><span style="color: #4B7688;">基本忍者</span>: バランス型 (50コイン)</li>
+                        <li><span style="color: #FFBF00;">速射忍者</span>: 攻撃速度重視 (80コイン)</li>
+                        <li><span style="color: #FF4444;">強撃忍者</span>: 攻撃力重視 (120コイン)</li>
+                        <li><span style="color: #4CAF50;">遠距離忍者</span>: 射程重視 (100コイン)</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 style="color: #fff; margin-bottom: 10px;">ゲームのコツ</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>茶色の道には忍者を配置できません</li>
+                        <li>敵の進行ルートを予測して配置</li>
+                        <li>各忍者の特性を活かした戦略を</li>
+                        <li>コインを貯めて強い忍者を配置</li>
+                    </ul>
+                    
+                    <h4 style="color: #fff; margin: 15px 0 10px;">勝利条件</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>敵を倒してコインとスコアを獲得</li>
+                        <li>体力が0になる前により多くのウェーブをクリア</li>
+                        <li>高スコアを目指しましょう！</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -308,28 +347,28 @@
                 damage: 10,
                 range: 150,
                 fireRate: 1000,
-                image: '/CryptoNinja-date/001.png'
+                image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTgiIGZpbGw9IiM0Qjc2ODgiLz4KPHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxMCIgeT0iMTAiPgo8cGF0aCBkPSJNMTAgMTUgTDE1IDVMIDUgNVoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo8L3N2Zz4K'
             },
             speed: {
                 cost: 80,
                 damage: 5,
                 range: 120,
                 fireRate: 400,
-                image: '/CryptoNinja-date/005.png'
+                image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTgiIGZpbGw9IiNGRkJGMDAiLz4KPHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxMCIgeT0iMTAiPgo8cGF0aCBkPSJNMTAgMTUgTDE1IDVMIDUgNVoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo8L3N2Zz4K'
             },
             power: {
                 cost: 120,
                 damage: 30,
                 range: 100,
                 fireRate: 2000,
-                image: '/CryptoNinja-date/010.png'
+                image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTgiIGZpbGw9IiNGRjQ0NDQiLz4KPHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxMCIgeT0iMTAiPgo8cGF0aCBkPSJNMTAgMTUgTDE1IDVMIDUgNVoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo8L3N2Zz4K'
             },
             range: {
                 cost: 100,
                 damage: 15,
                 range: 200,
                 fireRate: 1200,
-                image: '/CryptoNinja-date/015.png'
+                image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTgiIGZpbGw9IiM0Q0FGNTAZ'/+KPHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxMCIgeT0iMTAiPgo8cGF0aCBkPSJNMTAgMTUgTDE1IDVMIDUgNVoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo8L3N2Zz4K'
             }
         };
 
@@ -454,9 +493,21 @@
                 ninjaEl.style.left = (ninja.x - 30) + 'px';
                 ninjaEl.style.top = (ninja.y - 30) + 'px';
                 
-                const img = document.createElement('img');
-                img.src = ninjaType.image;
-                ninjaEl.appendChild(img);
+                const colors = {
+                    basic: '#4B7688',
+                    speed: '#FFBF00', 
+                    power: '#FF4444',
+                    range: '#4CAF50'
+                };
+                
+                const symbols = {
+                    basic: '基',
+                    speed: '速',
+                    power: '強', 
+                    range: '遠'
+                };
+                
+                ninjaEl.innerHTML = `<div style="width: 60px; height: 60px; background: ${colors[type]}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; border: 2px solid #fff;">${symbols[type]}</div>`;
                 
                 this.board.appendChild(ninjaEl);
                 ninja.element = ninjaEl;
