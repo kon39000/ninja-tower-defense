@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "name": "ninja-td",
+  "builds": [
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/ninja-tower-defense.html"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "ninja-td",
+  "version": "1.0.0",
+  "description": "忍者タワーディフェンスゲーム",
+  "main": "ninja-tower-defense.html",
+  "scripts": {
+    "start": "serve ."
+  },
+  "keywords": ["game", "tower-defense", "ninja"],
+  "author": "",
+  "license": "MIT"
+}

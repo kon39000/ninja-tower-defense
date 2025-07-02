@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>忍者タワーディフェンス</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #gameContainer {
+            background: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        #gameHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+        }
+
+        #gameBoard {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background: #444;
+            border: 2px solid #666;
+            border-radius: 5px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .cell {
+            position: absolute;
+            width: 80px;
+            height: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .cell:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .cell.occupied {
+            cursor: not-allowed;
+        }
+
+        .path {
+            background: rgba(139, 69, 19, 0.3);
+        }
+
+        .ninja {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            z-index: 10;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .ninja:hover {
+            transform: scale(1.1);
+        }
+
+        .ninja img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .enemy {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #ff4444;
+            border-radius: 50%;
+            z-index: 5;
+            transition: all 0.1s;
+        }
+
+        .projectile {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffff00;
+            border-radius: 50%;
+            z-index: 8;
+        }
+
+        #ninjaSelection {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #333;
+            border-radius: 5px;
+        }
+
+        .ninjaCard {
+            background: #444;
+            border: 2px solid #666;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .ninjaCard:hover {
+            background: #555;
+            border-color: #888;
+            transform: translateY(-2px);
+        }
+
+        .ninjaCard.selected {
+            background: #666;
+            border-color: #ffdd00;
+        }
+
+        .ninjaCard img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .ninjaCard .cost {
+            color: #ffdd00;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        #gameInfo {
+            display: flex;
+            gap: 20px;
+            font-size: 18px;
+        }
+
+        .info-item {
+            background: #444;
+            padding: 5px 15px;
+            border-radius: 5px;
+        }
+
+        .info-item span {
+            color: #ffdd00;
+            font-weight: bold;
+        }
+
+        #startWaveBtn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #startWaveBtn:hover {
+            background: #45a049;
+        }
+
+        #startWaveBtn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        #gameOverModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        #gameOverContent {
+            background: #333;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        #gameOverContent h2 {
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        #restartBtn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .damage-text {
+            position: absolute;
+            color: #ff0;
+            font-weight: bold;
+            font-size: 20px;
+            pointer-events: none;
+            z-index: 20;
+            animation: damageFloat 1s ease-out forwards;
+        }
+
+        @keyframes damageFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="gameHeader">
+            <div id="gameInfo">
+                <div class="info-item">体力: <span id="lives">20</span></div>
+                <div class="info-item">コイン: <span id="coins">200</span></div>
+                <div class="info-item">ウェーブ: <span id="wave">1</span></div>
+                <div class="info-item">スコア: <span id="score">0</span></div>
+            </div>
+            <button id="startWaveBtn">ウェーブ開始</button>
+        </div>
+        
+        <div id="gameBoard"></div>
+        
+        <div id="ninjaSelection">
+            <div class="ninjaCard" data-type="basic">
+                <img src="/CryptoNinja-date/001.png" alt="基本忍者">
+                <div>基本忍者</div>
+                <div class="cost">50コイン</div>
+            </div>
+            <div class="ninjaCard" data-type="speed">
+                <img src="/CryptoNinja-date/005.png" alt="速射忍者">
+                <div>速射忍者</div>
+                <div class="cost">80コイン</div>
+            </div>
+            <div class="ninjaCard" data-type="power">
+                <img src="/CryptoNinja-date/010.png" alt="強撃忍者">
+                <div>強撃忍者</div>
+                <div class="cost">120コイン</div>
+            </div>
+            <div class="ninjaCard" data-type="range">
+                <img src="/CryptoNinja-date/015.png" alt="遠距離忍者">
+                <div>遠距離忍者</div>
+                <div class="cost">100コイン</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameOverModal">
+        <div id="gameOverContent">
+            <h2>ゲームオーバー</h2>
+            <p>最終スコア: <span id="finalScore">0</span></p>
+            <p>到達ウェーブ: <span id="finalWave">0</span></p>
+            <button id="restartBtn">もう一度プレイ</button>
+        </div>
+    </div>
+
+    <script>
+        const GRID_COLS = 10;
+        const GRID_ROWS = 10;
+        const CELL_WIDTH = 80;
+        const CELL_HEIGHT = 60;
+
+        const ninjaTypes = {
+            basic: {
+                cost: 50,
+                damage: 10,
+                range: 150,
+                fireRate: 1000,
+                image: '/CryptoNinja-date/001.png'
+            },
+            speed: {
+                cost: 80,
+                damage: 5,
+                range: 120,
+                fireRate: 400,
+                image: '/CryptoNinja-date/005.png'
+            },
+            power: {
+                cost: 120,
+                damage: 30,
+                range: 100,
+                fireRate: 2000,
+                image: '/CryptoNinja-date/010.png'
+            },
+            range: {
+                cost: 100,
+                damage: 15,
+                range: 200,
+                fireRate: 1200,
+                image: '/CryptoNinja-date/015.png'
+            }
+        };
+
+        class Game {
+            constructor() {
+                this.board = document.getElementById('gameBoard');
+                this.lives = 20;
+                this.coins = 200;
+                this.wave = 1;
+                this.score = 0;
+                this.selectedNinja = null;
+                this.ninjas = [];
+                this.enemies = [];
+                this.projectiles = [];
+                this.path = [];
+                this.waveInProgress = false;
+                this.enemiesInWave = 0;
+                this.enemiesSpawned = 0;
+                
+                this.init();
+            }
+
+            init() {
+                this.createGrid();
+                this.createPath();
+                this.setupEventListeners();
+                this.updateUI();
+                this.gameLoop();
+            }
+
+            createGrid() {
+                for (let row = 0; row < GRID_ROWS; row++) {
+                    for (let col = 0; col < GRID_COLS; col++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.style.left = col * CELL_WIDTH + 'px';
+                        cell.style.top = row * CELL_HEIGHT + 'px';
+                        cell.dataset.row = row;
+                        cell.dataset.col = col;
+                        
+                        cell.addEventListener('click', () => this.handleCellClick(row, col));
+                        
+                        this.board.appendChild(cell);
+                    }
+                }
+            }
+
+            createPath() {
+                // 簡単な蛇行パス
+                this.path = [
+                    {row: 5, col: 0},
+                    {row: 5, col: 1},
+                    {row: 5, col: 2},
+                    {row: 4, col: 2},
+                    {row: 3, col: 2},
+                    {row: 3, col: 3},
+                    {row: 3, col: 4},
+                    {row: 3, col: 5},
+                    {row: 4, col: 5},
+                    {row: 5, col: 5},
+                    {row: 6, col: 5},
+                    {row: 6, col: 6},
+                    {row: 6, col: 7},
+                    {row: 5, col: 7},
+                    {row: 4, col: 7},
+                    {row: 4, col: 8},
+                    {row: 4, col: 9}
+                ];
+
+                this.path.forEach(({row, col}) => {
+                    const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                    if (cell) {
+                        cell.classList.add('path');
+                    }
+                });
+            }
+
+            setupEventListeners() {
+                document.querySelectorAll('.ninjaCard').forEach(card => {
+                    card.addEventListener('click', () => {
+                        document.querySelectorAll('.ninjaCard').forEach(c => c.classList.remove('selected'));
+                        card.classList.add('selected');
+                        this.selectedNinja = card.dataset.type;
+                    });
+                });
+
+                document.getElementById('startWaveBtn').addEventListener('click', () => this.startWave());
+                document.getElementById('restartBtn').addEventListener('click', () => this.restart());
+            }
+
+            handleCellClick(row, col) {
+                if (!this.selectedNinja) return;
+                
+                const isPath = this.path.some(p => p.row === row && p.col === col);
+                if (isPath) return;
+                
+                const isOccupied = this.ninjas.some(n => n.row === row && n.col === col);
+                if (isOccupied) return;
+                
+                const ninjaType = ninjaTypes[this.selectedNinja];
+                if (this.coins < ninjaType.cost) return;
+                
+                this.placeNinja(row, col, this.selectedNinja);
+            }
+
+            placeNinja(row, col, type) {
+                const ninjaType = ninjaTypes[type];
+                this.coins -= ninjaType.cost;
+                
+                const ninja = {
+                    row,
+                    col,
+                    type,
+                    x: col * CELL_WIDTH + CELL_WIDTH / 2,
+                    y: row * CELL_HEIGHT + CELL_HEIGHT / 2,
+                    lastFire: 0,
+                    ...ninjaType
+                };
+                
+                const ninjaEl = document.createElement('div');
+                ninjaEl.className = 'ninja';
+                ninjaEl.style.left = (ninja.x - 30) + 'px';
+                ninjaEl.style.top = (ninja.y - 30) + 'px';
+                
+                const img = document.createElement('img');
+                img.src = ninjaType.image;
+                ninjaEl.appendChild(img);
+                
+                this.board.appendChild(ninjaEl);
+                ninja.element = ninjaEl;
+                
+                this.ninjas.push(ninja);
+                this.updateUI();
+            }
+
+            startWave() {
+                if (this.waveInProgress) return;
+                
+                this.waveInProgress = true;
+                document.getElementById('startWaveBtn').disabled = true;
+                
+                this.enemiesInWave = 5 + this.wave * 3;
+                this.enemiesSpawned = 0;
+                
+                this.spawnEnemies();
+            }
+
+            spawnEnemies() {
+                const spawnInterval = setInterval(() => {
+                    if (this.enemiesSpawned >= this.enemiesInWave) {
+                        clearInterval(spawnInterval);
+                        return;
+                    }
+                    
+                    this.spawnEnemy();
+                    this.enemiesSpawned++;
+                }, 1000);
+            }
+
+            spawnEnemy() {
+                const startPos = this.path[0];
+                const enemy = {
+                    x: startPos.col * CELL_WIDTH + CELL_WIDTH / 2,
+                    y: startPos.row * CELL_HEIGHT + CELL_HEIGHT / 2,
+                    hp: 50 + this.wave * 10,
+                    maxHp: 50 + this.wave * 10,
+                    speed: 1 + this.wave * 0.1,
+                    pathIndex: 0,
+                    reward: 10 + this.wave * 2
+                };
+                
+                const enemyEl = document.createElement('div');
+                enemyEl.className = 'enemy';
+                enemyEl.style.left = (enemy.x - 20) + 'px';
+                enemyEl.style.top = (enemy.y - 20) + 'px';
+                
+                this.board.appendChild(enemyEl);
+                enemy.element = enemyEl;
+                
+                this.enemies.push(enemy);
+            }
+
+            updateEnemies() {
+                for (let i = this.enemies.length - 1; i >= 0; i--) {
+                    const enemy = this.enemies[i];
+                    
+                    if (enemy.pathIndex >= this.path.length - 1) {
+                        this.lives--;
+                        this.removeEnemy(i);
+                        
+                        if (this.lives <= 0) {
+                            this.gameOver();
+                        }
+                        continue;
+                    }
+                    
+                    const currentPos = this.path[enemy.pathIndex];
+                    const nextPos = this.path[enemy.pathIndex + 1];
+                    
+                    if (!nextPos) continue;
+                    
+                    const targetX = nextPos.col * CELL_WIDTH + CELL_WIDTH / 2;
+                    const targetY = nextPos.row * CELL_HEIGHT + CELL_HEIGHT / 2;
+                    
+                    const dx = targetX - enemy.x;
+                    const dy = targetY - enemy.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 5) {
+                        enemy.pathIndex++;
+                    } else {
+                        enemy.x += (dx / distance) * enemy.speed;
+                        enemy.y += (dy / distance) * enemy.speed;
+                        
+                        enemy.element.style.left = (enemy.x - 20) + 'px';
+                        enemy.element.style.top = (enemy.y - 20) + 'px';
+                    }
+                }
+            }
+
+            updateNinjas() {
+                const now = Date.now();
+                
+                this.ninjas.forEach(ninja => {
+                    if (now - ninja.lastFire < ninja.fireRate) return;
+                    
+                    const target = this.findTarget(ninja);
+                    if (target) {
+                        this.fire(ninja, target);
+                        ninja.lastFire = now;
+                    }
+                });
+            }
+
+            findTarget(ninja) {
+                let closestEnemy = null;
+                let closestDistance = Infinity;
+                
+                this.enemies.forEach(enemy => {
+                    const dx = enemy.x - ninja.x;
+                    const dy = enemy.y - ninja.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance <= ninja.range && distance < closestDistance) {
+                        closestDistance = distance;
+                        closestEnemy = enemy;
+                    }
+                });
+                
+                return closestEnemy;
+            }
+
+            fire(ninja, target) {
+                const projectile = {
+                    x: ninja.x,
+                    y: ninja.y,
+                    targetX: target.x,
+                    targetY: target.y,
+                    damage: ninja.damage,
+                    speed: 5,
+                    target: target
+                };
+                
+                const projectileEl = document.createElement('div');
+                projectileEl.className = 'projectile';
+                projectileEl.style.left = (projectile.x - 5) + 'px';
+                projectileEl.style.top = (projectile.y - 5) + 'px';
+                
+                this.board.appendChild(projectileEl);
+                projectile.element = projectileEl;
+                
+                this.projectiles.push(projectile);
+            }
+
+            updateProjectiles() {
+                for (let i = this.projectiles.length - 1; i >= 0; i--) {
+                    const projectile = this.projectiles[i];
+                    
+                    // ターゲットが存在しない場合は弾を削除
+                    if (!this.enemies.includes(projectile.target)) {
+                        projectile.element.remove();
+                        this.projectiles.splice(i, 1);
+                        continue;
+                    }
+                    
+                    const dx = projectile.target.x - projectile.x;
+                    const dy = projectile.target.y - projectile.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 10) {
+                        this.damageEnemy(projectile.target, projectile.damage);
+                        projectile.element.remove();
+                        this.projectiles.splice(i, 1);
+                    } else {
+                        projectile.x += (dx / distance) * projectile.speed;
+                        projectile.y += (dy / distance) * projectile.speed;
+                        
+                        projectile.element.style.left = (projectile.x - 5) + 'px';
+                        projectile.element.style.top = (projectile.y - 5) + 'px';
+                    }
+                }
+            }
+
+            damageEnemy(enemy, damage) {
+                enemy.hp -= damage;
+                
+                this.showDamageText(enemy.x, enemy.y, damage);
+                
+                if (enemy.hp <= 0) {
+                    const index = this.enemies.indexOf(enemy);
+                    if (index !== -1) {
+                        this.coins += enemy.reward;
+                        this.score += enemy.reward * 2;
+                        this.removeEnemy(index);
+                    }
+                }
+            }
+
+            showDamageText(x, y, damage) {
+                const damageEl = document.createElement('div');
+                damageEl.className = 'damage-text';
+                damageEl.textContent = '-' + damage;
+                damageEl.style.left = x + 'px';
+                damageEl.style.top = y + 'px';
+                
+                this.board.appendChild(damageEl);
+                
+                setTimeout(() => damageEl.remove(), 1000);
+            }
+
+            removeEnemy(index) {
+                if (index >= 0 && index < this.enemies.length) {
+                    const enemy = this.enemies[index];
+                    if (enemy.element) {
+                        enemy.element.remove();
+                    }
+                    this.enemies.splice(index, 1);
+                    
+                    if (this.enemies.length === 0 && this.enemiesSpawned >= this.enemiesInWave) {
+                        this.waveComplete();
+                    }
+                }
+            }
+
+            waveComplete() {
+                this.waveInProgress = false;
+                this.wave++;
+                this.coins += 50 + this.wave * 10;
+                this.score += 100 * this.wave;
+                
+                document.getElementById('startWaveBtn').disabled = false;
+                this.updateUI();
+            }
+
+            gameOver() {
+                document.getElementById('finalScore').textContent = this.score;
+                document.getElementById('finalWave').textContent = this.wave;
+                document.getElementById('gameOverModal').style.display = 'flex';
+            }
+
+            restart() {
+                location.reload();
+            }
+
+            updateUI() {
+                document.getElementById('lives').textContent = this.lives;
+                document.getElementById('coins').textContent = this.coins;
+                document.getElementById('wave').textContent = this.wave;
+                document.getElementById('score').textContent = this.score;
+            }
+
+            gameLoop() {
+                this.updateEnemies();
+                this.updateNinjas();
+                this.updateProjectiles();
+                this.updateUI();
+                
+                requestAnimationFrame(() => this.gameLoop());
+            }
+        }
+
+        // ゲーム開始
+        const game = new Game();
+    </script>
+</body>
+</html>
